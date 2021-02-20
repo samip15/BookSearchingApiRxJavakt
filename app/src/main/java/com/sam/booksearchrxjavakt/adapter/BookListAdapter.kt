@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sam.booksearchrxjavakt.R
 import com.sam.booksearchrxjavakt.network.VolumeInfo
+import java.lang.Exception
 
 class BookListAdapter: RecyclerView.Adapter<BookListAdapter.MyViewHolder>() {
     var bookListData = ArrayList<VolumeInfo>()
@@ -33,11 +34,16 @@ class BookListAdapter: RecyclerView.Adapter<BookListAdapter.MyViewHolder>() {
             txTitle1.text = data.volumeInfo.title
             txPublisher1.text = data.volumeInfo.publisher
             txDescription1.text  = data.volumeInfo.description
-            val url = data.volumeInfo?.imageLinks.smallThumbnail
-            Glide.with(imageView1)
-                    .load(url)
-                    .circleCrop()
-                    .into(imageView1)
+            try {
+                val url = data?.volumeInfo.imageLinks.smallThumbnail
+                Glide.with(imageView1)
+                        .load(url)
+                        .circleCrop()
+                        .into(imageView1)
+            }catch (e: Exception){
+                e.printStackTrace()
+                
+            }
         }
     }
 }

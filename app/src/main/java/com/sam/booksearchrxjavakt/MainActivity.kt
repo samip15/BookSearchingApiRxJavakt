@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout.VERTICAL
+import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -26,9 +28,9 @@ class MainActivity : AppCompatActivity() {
         initRecyclerView()
     }
 
-    fun initSearchBox(){
+    fun initSearchBox() {
         val editSearch = findViewById<EditText>(R.id.inputBookName)
-        editSearch.addTextChangedListener(object: TextWatcher{
+        editSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
@@ -40,21 +42,30 @@ class MainActivity : AppCompatActivity() {
 
             }
 
-        } )
+        })
     }
 
     private fun loadApiData(input: String) {
-      viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
-      viewModel.getBookListObserver().observe(this, Observer<BookListModel> {
-          if (it != null) {
+        val editSearch = findViewById<EditText>(R.id.inputBookName)
+        viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
+        viewModel.getBookListObserver().observe(this, Observer<BookListModel> {
+            if (it != null && editSearch!=null) {
                 // update adapter
-              bookListAdapter.bookListData = it.items
-              bookListAdapter.notifyDataSetChanged()
+                bookListAdapter.bookListData = it.items
+                bookListAdapter.notifyDataSetChanged()
+                val txt_error = findViewById<TextView>(R.id.txt_errror)
+                txt_error.visibility = View.INVISIBLE
+                val recyclerViewItem = findViewById<RecyclerView>(R.id.recyclerView)
+                recyclerViewItem.visibility = View.VISIBLE
 
-          } else {
-              Toast.makeText(this, "Error in fetching data", Toast.LENGTH_SHORT).show()
-          }
-      })
+            } else {
+                val txt_error = findViewById<TextView>(R.id.txt_errror)
+                txt_error.visibility = View.VISIBLE
+                val recyclerViewItem = findViewById<RecyclerView>(R.id.recyclerView)
+                recyclerViewItem.visibility = View.INVISIBLE
+                Toast.makeText(this, "Error in fetching data", Toast.LENGTH_SHORT).show()
+            }
+        })
         viewModel.makeApiCall(input)
     }
 
